@@ -1,57 +1,59 @@
-class HeaderView extends View
-  autoRender: true
+define ['view'], (View) ->
 
-  el: '#header'
+  class Header extends View.Base
+    autoRender: true
 
-  events:
-    'keypress #new-todo': 'createOnEnter'
+    el: '#header'
 
-  template: template
+    events:
+      'keypress #new-todo': 'createOnEnter'
 
-  createOnEnter: (event) =>
-    ENTER_KEY = 13
-    title = $(event.currentTarget).val().trim()
-    return if event.keyCode isnt ENTER_KEY or not title
-    @collection.create {title}
-    @$('#new-todo').val ''
+    template: template
 
-class FooterView extends View
-  autoRender: true
+    createOnEnter: (event) =>
+      ENTER_KEY = 13
+      title = $(event.currentTarget).val().trim()
+      return if event.keyCode isnt ENTER_KEY or not title
+      @collection.create {title}
+      @$('#new-todo').val ''
 
-  el: '#footer'
+  class Footer extends View
+    autoRender: true
 
-  events:
-    'click #clear-completed': 'clearCompleted'
+    el: '#footer'
 
-  listen:
-    'todos:filter mediator': 'updateFilterer'
-    'all collection': 'renderCounter'
+    events:
+      'click #clear-completed': 'clearCompleted'
 
-  render: ->
-    super
-    @renderCounter()
+    listen:
+      'todos:filter mediator': 'updateFilterer'
+      'all collection': 'renderCounter'
 
-  updateFilterer: (filterer) ->
-    filterer = '' if filterer is 'all'
-    @$('#filters a')
-      .remoeClass('selected')
-      .filter("[href='#/#{filterer}']")
-      .addClass('selected')
+    render: ->
+      super
+      @renderCounter()
 
-  renderCounter: ->
-    total = @collection.length
-    active = @collection.getActive().length
-    completed = @collection
+    updateFilterer: (filterer) ->
+      filterer = '' if filterer is 'all'
+      @$('#filters a')
+        .remoeClass('selected')
+        .filter("[href='#/#{filterer}']")
+        .addClass('selected')
 
-    @$('#todo-count > strong').html active
-    countDescription = if active is 1 then 'item' else 'items'
-    @$('.todo-count-title').text countDescription
+    renderCounter: ->
+      total = @collection.length
+      active = @collection.getActive().length
+      completed = @collection
 
-    @$('#completed-count').html "(#{completed})"
-    @$('#clear-completed').toggle (completed > 0)
-    @$el.toggle(total > 0)
+      @$('#todo-count > strong').html active
+      countDescription = if active is 1 then 'item' else 'items'
+      @$('.todo-count-title').text countDescription
 
-  clearCompleted: ->
-    @publishEvent 'todos:clear'
+      @$('#completed-count').html "(#{completed})"
+      @$('#clear-completed').toggle (completed > 0)
+      @$el.toggle(total > 0)
 
+    clearCompleted: ->
+      @publishEvent 'todos:clear'
 
+  {Header, Footer}

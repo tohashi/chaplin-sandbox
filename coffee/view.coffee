@@ -1,71 +1,75 @@
-class View extends Chaplin.View
-  getTemplateFunction: -> @template
+define ['chaplin'], (Chaplin) ->
 
-class CollectionView extends Chaplin.CollectionView
-  getTemplateFunction: View::getTemplateFunction
-  useCssAnimation: true
+  class Base extends Chaplin.View
+    getTemplateFunction: -> @template
 
-class TodoView extends View
-  events:
-    'click .toggle': 'toggle'
-    'dblclick label': 'edit'
-    'keypress .edit': 'save'
-    'blur .edit': 'save'
-    'click .destroy': 'destroy'
+  class BaseCollection extends Chaplin.CollectionView
+    getTemplateFunction: View::getTemplateFunction
+    useCssAnimation: true
 
-  listen:
-    'change model': 'render'
+  class Todo extends Base
+    events:
+      'click .toggle': 'toggle'
+      'dblclick label': 'edit'
+      'keypress .edit': 'save'
+      'blur .edit': 'save'
+      'click .destroy': 'destroy'
 
-  template: template
+    listen:
+      'change model': 'render'
 
-  tagName: 'li'
+    template: template
 
-  destroy: =>
-    @model.destroy()
+    tagName: 'li'
 
-  toggle: =>
-    @model.toggle().save()
+    destroy: =>
+      @model.destroy()
 
-  edit: =>
-    @$el.addClass 'editing'
-    @$('.edit').focus()
+    toggle: =>
+      @model.toggle().save()
 
-  save: (event) =>
-    ENTER_KEY = 13
-    title = $(event.currentTarget).val().trim()
-    return @model.destroy() unless title
-    return if event.type is 'keypress' and event.keyCode isnt ENTER_KEY
-    @model.save {title}
-    @$el.removeClass 'editing'
+    edit: =>
+      @$el.addClass 'editing'
+      @$('.edit').focus()
 
-class TodosView extends CollectionView
-  container: '#main'
+    save: (event) =>
+      ENTER_KEY = 13
+      title = $(event.currentTarget).val().trim()
+      return @model.destroy() unless title
+      return if event.type is 'keypress' and event.keyCode isnt ENTER_KEY
+      @model.save {title}
+      @$el.removeClass 'editing'
 
-  events:
-    'click #toggle-all': 'toggleCompleted'
+  class Todos extends BaseCollection
+    container: '#main'
 
-  itemView: TodoView
+    events:
+      'click #toggle-all': 'toggleCompleted'
 
-  listSelector: '#todo-list'
+    itemView: TodoView
 
-  listen:
-    'all collection': 'renderCheckbox'
-    'todos:clear mediator': 'clear'
+    listSelector: '#todo-list'
 
-  template: template
+    listen:
+      'all collection': 'renderCheckbox'
+      'todos:clear mediator': 'clear'
 
-  render: =>
-    super
-    @renderCheckBox()
+    template: template
 
-  renderCheckBox: =>
-    @$('#toggle-all').prop 'checked', @collection.allAreCompleted()
-    @$el.toggle @collection.length isnt 0
+    render: =>
+      super
+      @renderCheckBox()
 
-  toggleCompleted: (event) =>
-    isChecked = event.currentTarget.checked
-    @collection.each (todo) -> todo.save completed: isChecked
+    renderCheckBox: =>
+      @$('#toggle-all').prop 'checked', @collection.allAreCompleted()
+      @$el.toggle @collection.length isnt 0
 
-  clear: ->
-    @collection.getCompleted().forEach (model) ->
-      model.destroy()
+    toggleCompleted: (event) =>
+      isChecked = event.currentTarget.checked
+      @collection.each (todo) -> todo.save completed: isChecked
+
+    clear: ->
+      @collection.getCompleted().forEach (model) ->
+        model.destroy()
+
+  {Base, BaseCollection, Todo, Todos}
