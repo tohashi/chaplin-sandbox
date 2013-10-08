@@ -1,5 +1,5 @@
 requirejs.config
-  baseUrl: 'js/'
+  baseUrl: './js/'
   paths:
     'jquery': '../bower_components/jquery/jquery'
     'underscore': '../bower_components/lodash/dist/lodash'
@@ -16,21 +16,11 @@ requirejs.config
       deps: ['backbone']
       exports: 'Backbone.LocalStorage'
 
-require ['chaplin', 'collection'], (Chaplin, Collection) ->
+require ['chaplin'], (Chaplin) ->
   class Application extends Chaplin.Application
-    title: 'Todos'
+    title: 'chaplin-sandbox'
 
-    initMediator: ->
-      mediator = Chaplin.mediator
-      mediator.user = null
-      mediator.todos = new Collection.Todos()
-      mediator.todos.fetch()
-      super
-
-  $ ->
-    new Application
-      controllerSuffix: '-controller'
-      pushState: false
-      routes: (match) ->
-        match ':filterer', 'index#list'
-        match '', 'index#list'
+  new Application
+    routes: (match) ->
+      match '', 'hello#show'
+    controllerSuffix: '-controller'
