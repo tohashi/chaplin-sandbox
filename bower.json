@@ -7,12 +7,11 @@
   "license": "MIT",
   "dependencies": {
     "jquery": "~2.0.3",
-    "requirejs": "~2.1.8"
-  },
-  "devDependencies": {
+    "requirejs": "~2.1.8",
     "lodash": "~2.2.0",
     "backbone": "~1.0.0",
-    "backbone.localStorage": "~1.1.6",
-    "chaplin": "~0.11.0"
+    "chaplin": "~0.11.0",
+    "requirejs-text": "~2.0.9",
+    "handlebars": "~1.0.0"
   }
 }
